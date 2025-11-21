@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Deteksi Pneumonia - AI Diagnosis</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+/* ===================== BODY ===================== */
+body {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  color: #fff;
+  scroll-behavior: smooth;
+}
+/* Teks form input dan deskripsi jadi putih */
+#form p.text-muted {
+    color: #ffffff !important;
+}
+
+/* MEMAKSA SEMUA TEKS DI CARD BERWARNA PUTIH */
+.technology-card, .workflow-card, .about-card {
+    color: #ffffff; /* teks utama */
+}
+
+.technology-card h5,
+.workflow-card h6,
+.about-card h5 {
+    color: #ffffff; /* judul card */
+}
+
+.technology-card p,
+.workflow-card p,
+.about-card p {
+    color: #ffffff !important; /* deskripsi card */
+}
+
+/* Icon bi bisa tetap warna-warni agar menarik */
+.technology-card i,
+.workflow-card i,
+.about-card i {
+    color: inherit; /* optional jika ingin icon ikut warna putih */
+}
+
+/* ===================== NAVBAR ===================== */
+.navbar {
+  background: rgba(21,101,192,0.9) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+.navbar-brand { color: #fff !important; }
+.btn-light { color: #0d47a1 !important; }
+
+/* ===================== HOME SECTION ===================== */
+.home-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 6rem 2rem;
+  border-radius: 16px;
+  margin-top: 5rem;
+}
+.home-text h1 {
+  color: #42e695;
+  font-weight: 800;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 10px #42e695, 0 0 20px #3bb2b8;
+}
+.home-text p {
+  color: #cfd8dc;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.btn-get-started {
+  background: linear-gradient(90deg,#42e695,#3bb2b8);
+  color: white;
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+.btn-get-started:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+}
+
+/* ===================== UPLOAD BOX ===================== */
+.upload-box {
+  background: rgba(255,255,255,0.08);
+  border: 2px dashed rgba(255,255,255,0.4);
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+.upload-box:hover { border-color: #42e695; background: rgba(255,255,255,0.15); }
+.upload-box label { cursor: pointer; color: #42e695; font-weight: 600; font-size: 1.1rem; }
+
+/* ===================== PREVIEW IMAGE ===================== */
+#preview-container {
+  margin-top: 1.5rem;
+  display: none;
+  text-align: center;
+}
+#preview-img {
+  max-width: 100%;
+  max-height: 450px;
+  width: auto;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  object-fit: contain;
+}
+
+/* ===================== BUTTON ===================== */
+.btn-primary-custom {
+  background: linear-gradient(90deg,#42e695,#3bb2b8);
+  border-radius: 50px;
+  padding: 14px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+.btn-primary-custom:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 25px rgba(0,0,0,0.6);
+}
+
+ /* ===================== GLOBAL SPACING ===================== */
+  #form {
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+
+  .hero-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 40px 35px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(0,0,0,0.2);
+    color: #fff;
+    margin-bottom: 60px;
+  }
+
+  .hero-title {
+    color: #42e695;
+    font-weight: 700;
+  }
+
+  /* ===================== INPUT FORM STYLING ===================== */
+  .form-label {
+    color: #ffffff;
+  }
+
+  .form-control,
+  .form-select {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+  }
+
+  .form-control::placeholder {
+    color: rgba(255,255,255,0.6);
+  }
+
+  textarea.form-control {
+    resize: none;
+  }
+
+  /* ===================== UPLOAD BOX ===================== */
+  .upload-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    text-align: center;
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+  }
+
+  .upload-box:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #42e695;
+  }
+
+  .upload-box input[type="file"] {
+    display: none;
+  }
+
+  #preview-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  #preview-img {
+    max-width: 250px;
+    border-radius: 15px;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+  }
+
+  /* ===================== BUTTON ===================== */
+  .btn-primary-custom {
+    background: linear-gradient(135deg, #42e695, #3bb2b8);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary-custom:hover {
+    background: linear-gradient(135deg, #34d399, #2a9d8f);
+    transform: translateY(-2px);
+  }
+
+  /* ===================== CARD RESULT ===================== */
+  .card-result {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 35px;
+    color: #ffffff;
+    box-shadow: 0 0 25px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    margin-top: 60px; /* Tambah jarak dari form */
+  }
+
+  .card-result:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 35px rgba(66, 230, 149, 0.3);
+  }
+
+  .result-normal, .result-pneumonia {
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .result-normal {
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+  }
+
+  .result-pneumonia {
+    background: linear-gradient(135deg, #ff512f, #dd2476);
+  }
+
+  .table {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .table th, .table td {
+    background-color: rgba(255, 255, 255, 0.02);
+    color: #ffffff;
+  }
+
+  .progress {
+    height: 22px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 15px;
+  }
+
+  h5 {
+    color: #42e695;
+    margin-top: 35px;
+    margin-bottom: 15px;
+  }
+
+  .list-group-item {
+    background-color: rgba(255,255,255,0.05);
+    color: #ffffff;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 10px 15px;
+  }
+
+  .list-group-item::before {
+    content: "•";
+    color: #42e695;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+/* ===================== CARDS TEKNOLOGI, WORKFLOW, ABOUT ===================== */
+.technology-card, .workflow-card, .about-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(66,230,149,0.3);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  padding: 2rem;
+  color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.technology-card:hover, .workflow-card:hover, .about-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 20px #42e695 inset;
+}
+
+/* ===================== FOOTER ===================== */
+footer {
+  margin-top: 4rem;
+  background: rgba(0,0,0,0.2);
+  padding: 18px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #cfd8dc;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+/* ===================== PREPROCESSING SECTION ===================== */
+.preprocess-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(66,230,149,0.25);
+  border-radius: 18px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff; /* semua teks putih */
+}
+.preprocess-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 35px rgba(66,230,149,0.4);
+}
+.preprocess-card h6 {
+  color: #ffffff !important;
+  margin-bottom: 0.8rem;
+}
+.preprocess-card img {
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.6);
+  transition: all 0.3s ease;
+}
+.preprocess-card img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(66,230,149,0.6);
+}
+
+/* ===================== ANIMASI ===================== */
+@keyframes fadeInUp {
+  from {opacity: 0; transform: translateY(30px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+.technology-card, .workflow-card, .about-card { animation: fadeInUp 0.8s ease forwards; opacity: 0; }
+.technology-card:nth-child(1), .workflow-card:nth-child(1), .about-card:nth-child(1) {animation-delay: 0.2s;}
+.technology-card:nth-child(2), .workflow-card:nth-child(2), .about-card:nth-child(2) {animation-delay: 0.4s;}
+.technology-card:nth-child(3), .workflow-card:nth-child(3), .about-card:nth-child(3) {animation-delay: 0.6s;}
+.technology-card:nth-child(4), .workflow-card:nth-child(4), .about-card:nth-child(4) {animation-delay: 0.8s;}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" href="#home">
+      <i class="bi bi-heart-pulse me-2 fs-3 text-light"></i> Deteksi Pneumonia
+    </a>
+    <div>
+      <a href="#form" class="btn btn-light btn-sm me-2"><i class="bi bi-clipboard2-pulse"></i> Deteksi</a>
+      <a href="/admin" class="btn btn-light btn-sm shadow-sm">
+        <i class="bi bi-person-gear me-1"></i> Admin
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME SECTION -->
+<section class="home-section container mt-5" id="home">
+  <div class="home-text">
+    <h1><i class="bi bi-cpu me-2"></i>AI Diagnosis Pneumonia</h1>
+    <p>
+      Sistem cerdas berbasis kecerdasan buatan yang dapat membantu mendeteksi 
+      <strong>Pneumonia</strong> melalui foto X-Ray dada secara cepat dan akurat.
+      Dirancang untuk membantu tenaga medis dalam pengambilan keputusan klinis dengan lebih efisien.
+    </p>
+    <button class="btn-get-started" onclick="document.getElementById('form').scrollIntoView({ behavior: 'smooth' });">
+      <i class="bi bi-arrow-down-circle me-2"></i>Mulai Deteksi Sekarang
+    </button>
+  </div>
+</section>
+
+<!-- TEKNOLOGI -->
+<section id="technology" class="container mt-5">
+  <h2 class="text-center fw-bold mb-4"><i class="bi bi-tools me-2"></i>Teknologi yang Digunakan</h2>
+  <div class="row g-4 text-center">
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 technology-card">
+        <i class="bi bi-cpu fs-1 mb-2 text-primary"></i>
+        <h5 class="fw-bold">MobileNetV2</h5>
+        <p class="text-muted">Feature extractor CNN pretrained untuk mengambil ciri penting citra X-Ray.</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 technology-card">
+        <i class="bi bi-diagram-3 fs-1 mb-2 text-success"></i>
+        <h5 class="fw-bold">K-Nearest Neighbors (KNN)</h5>
+        <p class="text-muted">Klasifikasi berbasis jarak tetangga terdekat untuk prediksi label pneumonia.</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 technology-card">
+        <i class="bi bi-brush fs-1 mb-2 text-warning"></i>
+        <h5 class="fw-bold">StandardScaler & LabelEncoder</h5>
+        <p class="text-muted">Normalisasi fitur dan encoding label untuk memastikan akurasi prediksi.</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 technology-card">
+        <i class="bi bi-database fs-1 mb-2 text-danger"></i>
+        <h5 class="fw-bold">Joblib</h5>
+        <p class="text-muted">Menyimpan dan memuat model serta scaler untuk digunakan kembali tanpa retraining.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW -->
+<section id="workflow" class="container mt-5">
+  <h2 class="text-center fw-bold mb-4"><i class="bi bi-arrow-repeat me-2"></i>Cara Kerja Sistem</h2>
+  <div class="row g-4 text-center">
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 workflow-card">
+        <i class="bi bi-upload fs-1 mb-2 text-primary"></i>
+        <h6 class="fw-bold">1. Upload Gambar</h6>
+        <p class="text-muted">Pengguna mengunggah foto X-Ray pasien ke sistem.</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 workflow-card">
+        <i class="bi bi-brush fs-1 mb-2 text-success"></i>
+        <h6 class="fw-bold">2. Preprocessing</h6>
+        <p class="text-muted">Gambar diubah ukuran, dikonversi ke array, dan dinormalisasi.</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 workflow-card">
+        <i class="bi bi-cpu fs-1 mb-2 text-warning"></i>
+        <h6 class="fw-bold">3. Ekstraksi Fitur</h6>
+        <p class="text-muted">MobileNetV2 mengambil fitur penting dari X-Ray dan dibuat vektor 1D.</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 workflow-card">
+        <i class="bi bi-check-circle fs-1 mb-2 text-danger"></i>
+        <h6 class="fw-bold">4. Prediksi & Output</h6>
+        <p class="text-muted">KNN memprediksi label pneumonia dan ditampilkan ke pengguna.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="container mt-5 mb-5">
+  <h2 class="text-center fw-bold mb-4"><i class="bi bi-info-circle me-2"></i>Tentang Sistem & Dataset</h2>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm p-4 about-card">
+        <h5 class="fw-bold"><i class="bi bi-database me-2 text-primary"></i>Dataset</h5>
+        <p class="text-muted">
+          Dataset Chest X-Ray berisi gambar dada pasien dengan dua label: <strong>NORMAL</strong> dan <strong>PNEUMONIA</strong>.
+          Data digunakan untuk melatih sistem AI agar dapat mengenali tanda pneumonia dari citra X-Ray.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm p-4 about-card">
+        <h5 class="fw-bold"><i class="bi bi-gear me-2 text-success"></i>Sistem</h5>
+        <p class="text-muted">
+          Sistem menggunakan kombinasi <strong>MobileNetV2</strong> untuk feature extraction dan <strong>KNN</strong> untuk klasifikasi. 
+          Mendukung pipeline lengkap dari upload gambar, preprocessing, ekstraksi fitur, klasifikasi hingga menampilkan hasil prediksi ke pengguna.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- MODEL SPECIFICATIONS -->
+<section id="model-specs" class="container mt-5 mb-5">
+  <h2 class="text-center fw-bold mb-4">
+    <i class="bi bi-gear-fill me-2"></i>Spesifikasi & Evaluasi Model
+  </h2>
+
+  <div class="row g-4 text-center">
+
+    <!-- Hyperparameters Card -->
+    <div class="col-md-4 d-flex">
+      <div class="card shadow-sm p-4 technology-card flex-fill"
+           style="background: rgba(30,30,40,0.85); border-radius: 20px; color:#fff;">
+        <i class="bi bi-sliders fs-1 mb-3" style="color:#42e695;"></i>
+        <h5 class="fw-bold mb-3">Hyperparameters</h5>
+        <ul class="list-group list-group-flush text-start" style="border:none;">
+          <li class="list-group-item" style="background: none; color:#fff;">
+            <strong>Metric:</strong> euclidean
+          </li>
+          <li class="list-group-item" style="background: none; color:#fff;">
+            <strong>n_neighbors:</strong> 5
+          </li>
+          <li class="list-group-item" style="background: none; color:#fff;">
+            <strong>Weights:</strong> uniform
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Performance Card -->
+    <div class="col-md-4 d-flex">
+      <div class="card shadow-sm p-4 technology-card flex-fill"
+           style="background: rgba(30,30,40,0.85); border-radius: 20px; color:#fff;">
+        <i class="bi bi-bar-chart-line-fill fs-1 mb-3" style="color:#42e695;"></i>
+        <h5 class="fw-bold mb-3">Performance</h5>
+        <ul class="list-group list-group-flush text-start" style="border:none;">
+          <li class="list-group-item" style="background: none; color:#fff;">
+            <strong>Validation Accuracy:</strong> 0.9642
+          </li>
+          <li class="list-group-item" style="background: none; color:#fff;">
+            <strong>Test Accuracy:</strong> 0.9681
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Classification Report Card -->
+    <div class="col-md-4 d-flex">
+      <div class="card shadow-sm p-4 technology-card flex-fill"
+           style="background: rgba(30,30,40,0.85); border-radius: 20px; color:#fff;">
+        <i class="bi bi-file-earmark-text fs-1 mb-3" style="color:#42e695;"></i>
+        <h5 class="fw-bold mb-3">Classification Report</h5>
+        <ul class="list-group list-group-flush text-start" style="border:none;">
+          <li class="list-group-item" style="background: none; color:#fff;">
+            <strong>NORMAL:</strong> 0.93
+          </li>
+          <li class="list-group-item" style="background: none; color:#fff;">
+            <strong>PNEUMONIA:</strong> 0.98
+          </li>
+          <li class="list-group-item" style="background: none; color:#fff;">
+            <strong>Total Accuracy:</strong> 0.97
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FORM SECTION -->
+<div id="form" class="container">
+  <div class="hero-section mx-auto col-lg-8 col-md-10 col-sm-12">
+    <h2 class="text-center hero-title"><i class="bi bi-clipboard2-pulse me-2"></i>Form Input Pasien & Upload X-Ray</h2>
+    <p class="text-center text-muted mb-4">Masukkan data pasien dan unggah foto X-Ray untuk analisis otomatis menggunakan model AI.</p>
+
+    <form action="/" method="POST" enctype="multipart/form-data">
+      <div class="row mb-3">
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold"><i class="bi bi-person-fill icon-label"></i>Nama Pasien</label>
+          <input type="text" name="nama" class="form-control" placeholder="Masukkan nama lengkap" required>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label fw-semibold"><i class="bi bi-calendar-heart icon-label"></i>Umur</label>
+          <input type="number" name="umur" class="form-control" placeholder="Tahun" required>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label fw-semibold"><i class="bi bi-gender-ambiguous icon-label"></i>Jenis Kelamin</label>
+          <select name="jenis_kelamin" class="form-select" required>
+            <option value="">Pilih...</option>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold"><i class="bi bi-geo-alt-fill icon-label"></i>Alamat</label>
+        <textarea name="alamat" class="form-control" rows="2" placeholder="Masukkan alamat lengkap" required></textarea>
+      </div>
+
+      <div class="mb-4">
+        <div class="upload-box">
+          <input type="file" id="file" name="file" accept="image/*" required onchange="previewImage(event)">
+          <label for="file">
+            <i class="bi bi-cloud-upload-fill fs-3 d-block mb-2"></i>
+            Klik untuk mengunggah foto X-Ray<br><small class="text-muted">Format: JPG, JPEG, PNG</small>
+          </label>
+        </div>
+
+        <div id="preview-container">
+          <p class="mt-3 text-white fw-semibold"><i class="bi bi-image"></i> Pratinjau Foto X-Ray:</p>
+          <img id="preview-img" src="#" alt="Preview X-Ray">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary-custom w-100 shadow-sm">
+        <i class="bi bi-cpu me-2"></i>Analisis Sekarang
+      </button>
+    </form>
+  </div>
+
+  {% if result %}
+  <div class="card card-result">
+    <h3 class="text-center fw-bold mb-3">
+      <i class="bi bi-activity me-2"></i>Hasil Analisis AI
+    </h3>
+
+    <div class="text-center mb-4">
+      <img src="/{{ file_path }}" class="img-fluid rounded shadow-sm" style="max-width: 350px;">
+    </div>
+
+    <div class="{% if label|lower == 'pneumonia' %}result-pneumonia{% else %}result-normal{% endif %}">
+      <i class="bi bi-heart-pulse-fill me-2"></i>
+      <strong>
+        {% if label|lower == 'pneumonia' %}
+          TERDETEKSI {{ label }}
+        {% else %}
+          {{ label }}
+        {% endif %}
+      </strong>
+    </div>
+
+    <table class="table table-bordered align-middle mt-3">
+      <tbody>
+        <tr><th><i class="bi bi-person-fill"></i> Nama</th><td>{{ nama }}</td></tr>
+        <tr><th><i class="bi bi-calendar-heart"></i> Umur</th><td>{{ umur }}</td></tr>
+        <tr><th><i class="bi bi-gender-ambiguous"></i> Jenis Kelamin</th><td>{{ jenis_kelamin }}</td></tr>
+        <tr><th><i class="bi bi-geo-alt-fill"></i> Alamat</th><td>{{ alamat }}</td></tr>
+        <tr>
+          <th><i class="bi bi-bar-chart-line-fill"></i> Kepercayaan Model</th>
+          <td>
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped" style="background-color:#42e695; width: {{ confidence }}%;" aria-valuenow="{{ confidence }}" aria-valuemin="0" aria-valuemax="100">
+                {{ confidence }}%
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th><i class="bi bi-thermometer-half"></i> Tingkat Keparahan</th>
+          <td>
+            {% if severity == "Normal" %}
+              <span class="badge bg-success px-3 py-2">{{ severity }}</span>
+            {% elif severity == "Ringan" %}
+              <span class="badge bg-info text-dark px-3 py-2">{{ severity }}</span>
+            {% elif severity == "Sedang" %}
+              <span class="badge bg-warning text-dark px-3 py-2">{{ severity }}</span>
+            {% elif severity == "Berat" %}
+              <span class="badge bg-danger px-3 py-2">{{ severity }}</span>
+            {% else %}
+              <span class="badge bg-secondary px-3 py-2">{{ severity }}</span>
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h5 class="mt-4 fw-semibold"><i class="bi bi-prescription2 me-2"></i>Rekomendasi Tindakan:</h5>
+    <ul class="list-group list-group-flush">
+      {% for rec in recommendations %}
+        <li class="list-group-item">{{ rec }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+{% if preprocessed_paths %}
+
+<div class="mt-5">
+  <h4 class="fw-bold text-center text-white mb-4">
+    <i class="bi bi-cpu-fill text-success"></i> Tahapan Preprocessing Citra X-Ray
+  </h4>
+
+  <div class="row justify-content-center text-center">
+
+<!-- 1. RGB -->
+<div class="col-md-4 mb-4">
+  <div class="card preprocess-card">
+    <div class="card-body">
+      <i class="bi bi-image text-info fs-3 mb-2"></i>
+      <h6 class="fw-semibold text-white">Citra RGB (Asli)</h6>
+      <img src="{{ url_for('static', filename=preprocessed_paths['rgb'].split('static/')[-1]) }}"
+           class="img-fluid rounded border border-info" alt="RGB Image">
+      <p class="text-white mt-2 small">
+        Menampilkan citra X-Ray asli dalam format RGB tanpa modifikasi, sebagai acuan awal sebelum preprocessing.
+      </p>
+    </div>
+  </div>
+</div>
+<!-- 4. Gaussian Blur -->
+<div class="col-md-4 mb-4">
+  <div class="card preprocess-card">
+    <div class="card-body">
+      <i class="bi bi-droplet-half text-primary fs-3 mb-2"></i>
+      <h6 class="fw-semibold text-white">Gaussian Blur (Reduksi Noise)</h6>
+      <img src="{{ url_for('static', filename=preprocessed_paths['blur'].split('static/')[-1]) }}"
+           class="img-fluid rounded border border-primary" alt="Blur Image">
+      <p class="text-white mt-2 small">
+        Menghaluskan citra untuk mengurangi noise atau titik-titik acak yang bisa mengganggu analisis.
+      </p>
+    </div>
+  </div>
+</div>
+<!-- 2. Histogram Equalization -->
+<div class="col-md-4 mb-4">
+  <div class="card preprocess-card">
+    <div class="card-body">
+      <i class="bi bi-brightness-high text-success fs-3 mb-2"></i>
+      <h6 class="fw-semibold text-white">Histogram Equalization</h6>
+      <img src="{{ url_for('static', filename=preprocessed_paths['equalized'].split('static/')[-1]) }}"
+           class="img-fluid rounded border border-success" alt="Equalized Image">
+      <p class="text-white mt-2 small">
+        Meningkatkan kontras citra sehingga detail pada area gelap dan terang lebih jelas terlihat.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Binary -->
+<div class="col-md-4 mb-4">
+  <div class="card preprocess-card">
+    <div class="card-body">
+      <i class="bi bi-grid-3x3-gap text-warning fs-3 mb-2"></i>
+      <h6 class="fw-semibold text-white">Citra Biner (Thresholding)</h6>
+      <img src="{{ url_for('static', filename=preprocessed_paths['binary'].split('static/')[-1]) }}"
+           class="img-fluid rounded border border-warning" alt="Binary Image">
+      <p class="text-white mt-2 small">
+        Mengubah citra menjadi hitam-putih berdasarkan ambang tertentu untuk menonjolkan struktur penting.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 5. Morphological Opening -->
+<div class="col-md-4 mb-4">
+  <div class="card preprocess-card">
+    <div class="card-body">
+      <i class="bi bi-diagram-3 text-danger fs-3 mb-2"></i>
+      <h6 class="fw-semibold text-white">Morphological Opening</h6>
+      <img src="{{ url_for('static', filename=preprocessed_paths['opened'].split('static/')[-1]) }}"
+           class="img-fluid rounded border border-danger" alt="Opened Image">
+      <p class="text-white mt-2 small">
+        Menghilangkan noise kecil dan menyempurnakan bentuk objek dengan operasi morfologi (erosi lalu dilatasi).
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Edge Detection -->
+<div class="col-md-4 mb-4">
+  <div class="card preprocess-card">
+    <div class="card-body">
+      <i class="bi bi-border-style text-light fs-3 mb-2"></i>
+      <h6 class="fw-semibold text-white">Edge Detection (Canny)</h6>
+      <img src="{{ url_for('static', filename=preprocessed_paths['edges'].split('static/')[-1]) }}"
+           class="img-fluid rounded border border-light" alt="Edge Image">
+      <p class="text-white mt-2 small">
+        Menemukan tepi atau batas objek dalam citra, berguna untuk menyoroti struktur anatomi penting.
+      </p>
+    </div>
+  </div>
+</div>
+
+  </div>
+</div>
+{% endif %}
+
+
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Sistem Diagnosa Pneumonia Berbasis AI | Dibuat untuk mendukung tenaga medis dengan teknologi cerdas.</p>
+</footer>
+
+<!-- Preview Gambar -->
+<script>
+function previewImage(event) {
+  const input = event.target;
+  const previewContainer = document.getElementById('preview-container');
+  const previewImage = document.getElementById('preview-img');
+
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImage.src = e.target.result;
+      previewContainer.style.display = 'block';
+    }
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    previewContainer.style.display = 'none';
+  }
+}
+
+// Scroll otomatis ke hasil analisis setelah submit
+document.querySelector('form').addEventListener('submit', function(e){
+  // Tunggu sebentar hingga page reload selesai dan ada element hasil
+  setTimeout(() => {
+    const hasil = document.querySelector('.card-result');
+    if (hasil) hasil.scrollIntoView({behavior: 'smooth'});
+  }, 500);
+});
+// Jika ada hasil, scroll otomatis ke card-result
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const resultCard = document.querySelector('.card-result');
+    if(resultCard){
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Admin Data Pasien</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    /* ===================== BODY ===================== */
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ===================== TABLE STYLE ===================== */
+    h2 {
+      font-weight: 700;
+      color: #42e695;
+      text-shadow: 0 0 10px rgba(66,230,149,0.6);
+    }
+
+    .table {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    thead th {
+      background: linear-gradient(90deg, #42e695, #3bb2b8);
+      color: #fff !important;
+      text-align: center;
+      font-weight: 600;
+      border: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    td, th {
+      vertical-align: middle;
+    }
+
+    td img {
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    td img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(66,230,149,0.5);
+    }
+
+    /* ===================== BADGE KEPAHAN ===================== */
+    .badge-normal {
+      background: linear-gradient(135deg, #43cea2, #185a9d);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .badge-sedang {
+      background: linear-gradient(135deg, #fff3cd, #ffb347);
+      color: #222;
+      font-weight: 600;
+    }
+
+    .badge-berat {
+      background: linear-gradient(135deg, #ff512f, #dd2476);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .badge-ringan {
+      background: linear-gradient(135deg, #9be15d, #00e3ae);
+      color: #000;
+      font-weight: 600;
+    }
+
+    /* ===================== LABEL COLORS ===================== */
+    .badge-label-normal {
+      background: linear-gradient(135deg, #43cea2, #185a9d);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(66,230,149,0.4);
+    }
+
+    .badge-label-pneumonia {
+      background: linear-gradient(135deg, #ff512f, #dd2476);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255,81,47,0.4);
+    }
+
+    /* ===================== BUTTON ===================== */
+    .btn-add {
+      background: linear-gradient(90deg, #42e695, #3bb2b8);
+      border: none;
+      color: #fff;
+      border-radius: 50px;
+      padding: 10px 24px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn-add:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(66,230,149,0.4);
+    }
+
+    .btn-delete {
+      background: linear-gradient(90deg, #ff512f, #dd2476);
+      border: none;
+      color: #fff;
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .btn-delete:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255,81,47,0.5);
+    }
+
+    /* ===================== MODAL ===================== */
+    .modal-content {
+      background: rgba(20, 30, 40, 0.95);
+      color: #fff;
+      border: 1px solid rgba(66,230,149,0.3);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .modal-body img {
+      border-radius: 10px;
+      max-height: 80vh;
+      object-fit: contain;
+    }
+
+    /* ===================== FOOTER ===================== */
+    footer {
+      margin-top: 40px;
+      padding: 15px;
+      text-align: center;
+      color: #cfd8dc;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container py-5">
+  <h2 class="text-center mb-4"><i class="bi bi-person-gear"></i> Data Pasien & Hasil Deteksi</h2>
+
+  <div class="table-responsive shadow-sm">
+    <table class="table table-bordered table-hover align-middle text-white">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Umur</th>
+          <th>Jenis Kelamin</th>
+          <th>Alamat</th>
+          <th>Label</th>
+          <th>Confidence</th>
+          <th>Keparahan</th>
+          <th>Gambar</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in data %}
+        <tr>
+          <td class="text-center">{{ loop.index }}</td>
+          <td>{{ p.nama }}</td>
+          <td class="text-center">{{ p.umur }}</td>
+          <td class="text-center">{{ p.jenis_kelamin }}</td>
+          <td>{{ p.alamat }}</td>
+
+          <!-- Label warna dinamis -->
+          <td class="text-center">
+            {% if p.predicted_label|lower == 'normal' %}
+              <span class="badge badge-label-normal">Normal</span>
+            {% elif p.predicted_label|lower == 'pneumonia' %}
+              <span class="badge badge-label-pneumonia">Pneumonia</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ p.predicted_label }}</span>
+            {% endif %}
+          </td>
+
+          <td class="text-center text-success fw-bold">{{ "%.2f"|format(p.confidence * 100) }}%</td>
+
+          <!-- Badge keparahan -->
+          <td class="text-center">
+            {% if p.severity == 'Normal' %}
+              <span class="badge badge-normal">Normal</span>
+            {% elif p.severity == 'Ringan' %}
+              <span class="badge badge-ringan">Ringan</span>
+            {% elif p.severity == 'Sedang' %}
+              <span class="badge badge-sedang">Sedang</span>
+            {% elif p.severity == 'Berat' %}
+              <span class="badge badge-berat">Berat</span>
+            {% else %}
+              <span class="badge bg-secondary text-dark">{{ p.severity }}</span>
+            {% endif %}
+          </td>
+
+          <!-- Gambar X-Ray -->
+          <td class="text-center">
+            <img src="{{ '/' + p.file_path }}" width="80" class="rounded shadow-sm img-thumbnail" 
+                 data-bs-toggle="modal" data-bs-target="#imgModal" data-img="{{ '/' + p.file_path }}">
+          </td>
+
+          <!-- Tombol Hapus -->
+          <td class="text-center">
+            <form action="{{ url_for('delete_patient', id=p.id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+              <button type="submit" class="btn btn-delete btn-sm"><i class="bi bi-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="/" class="btn btn-add shadow-sm"><i class="bi bi-plus-circle"></i> Tambah Data Baru</a>
+  </div>
+</div>
+
+<!-- Modal Gambar -->
+<div class="modal fade" id="imgModal" tabindex="-1" aria-labelledby="imgModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <img id="modalImage" src="" class="img-fluid rounded shadow-sm">
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 Sistem Diagnosa Pneumonia Berbasis AI | Halaman Admin</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const imgModal = document.getElementById('imgModal');
+  imgModal.addEventListener('show.bs.modal', event => {
+    const img = event.relatedTarget;
+    const src = img.getAttribute('data-img');
+    document.getElementById('modalImage').src = src;
+  });
+</script>
+</body>
+</html>
