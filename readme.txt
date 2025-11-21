@@ -96,3 +96,26 @@ Runs GridSearch to obtain the best KNN configuration
 Saves the model, scaler, and label encoder
 
 The generated model is then used by the main Flask application for prediction.
+
+
+🛠️ Environment Setup (Virtual Environment)
+
+Before running this project, make sure to create and activate a virtual environment (venv) to keep all dependencies properly isolated.
+
+1. Create Virtual Environment
+python -m venv venv
+
+2. Activate Virtual Environment
+
+Windows:
+
+venv\Scripts\activate
+
+Linux / macOS:
+
+source venv/bin/activate
+
+3. Install Dependencies
+pip install -r requirements.txt
+
+After completing these steps, the project is ready to run.
